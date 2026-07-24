@@ -35,3 +35,9 @@
         <DataTable {columns} ajaxUrl="http://localhost:3000/battles" onDetailsClick={goToDetails} />
     </div>
 </div>
+
+<style>
+    :global(.dt-length select option) {
+        background-color: #374151;
+    }
+</style>
