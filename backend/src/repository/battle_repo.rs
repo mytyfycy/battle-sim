@@ -1,7 +1,7 @@
 use crate::core::battle::BattleResult;
 use crate::core::turn_queue::TeamId;
 use crate::models::battle_dto::{BattleDetail, BattleListItem};
-use sqlx::PgPool;
+use sqlx::{AssertSqlSafe, PgPool};
 use uuid::Uuid;
 
 pub async fn save_battle(pool: &PgPool, result: &BattleResult) -> anyhow::Result<Uuid> {
@@ -47,18 +47,72 @@ pub async fn save_battle(pool: &PgPool, result: &BattleResult) -> anyhow::Result
     Ok(row.0)
 }
 
-pub async fn list_battles(pool: &PgPool) -> anyhow::Result<Vec<BattleListItem>> {
-    let rows = sqlx::query_as::<_, BattleListItem>(
+pub const SORTABLE_COLUMNS: &[&str] = &[
+    "character_a_name",
+    "character_b_name",
+    "winner_name",
+    "loser_name",
+    "attacker_hp_at_end",
+];
+
+const SEARCH_CONDITION: &str = r#"
+    character_a_name ILIKE $1 OR
+    character_b_name ILIKE $1 OR
+    winner_name ILIKE $1 OR
+    loser_name ILIKE $1 OR
+    attacker_hp_at_end::text ILIKE $1
+"#;
+
+pub async fn list_battles_datatable(
+    pool: &PgPool,
+    search: &str,
+    limit: i64,
+    offset: i64,
+    order_column: &str,
+    order_dir: &str,
+) -> anyhow::Result<(Vec<BattleListItem>, i64, i64)> {
+    let column = SORTABLE_COLUMNS
+        .iter()
+        .find(|&&c| c == order_column)
+        .copied()
+        .unwrap_or("created_at");
+    let direction = if order_dir.eq_ignore_ascii_case("asc") {
+        "ASC"
+    } else {
+        "DESC"
+    };
+
+    let query = format!(
         r#"
         SELECT id, character_a_name, character_b_name, winner_name, loser_name, attacker_hp_at_end
         FROM battles
-        ORDER BY created_at DESC
-        "#,
-    )
-    .fetch_all(pool)
-    .await?;
+        WHERE {SEARCH_CONDITION}
+        ORDER BY {column} {direction}
+        LIMIT $2 OFFSET $3
+        "#
+    );
 
-    Ok(rows)
+    let like_pattern = format!("%{search}%");
+
+    let items = sqlx::query_as::<_, BattleListItem>(AssertSqlSafe(query))
+        .bind(&like_pattern)
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(pool)
+        .await?;
+
+    let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM battles")
+        .fetch_one(pool)
+        .await?;
+
+    let query_filtered = format!("SELECT COUNT(*) FROM battles WHERE {SEARCH_CONDITION}");
+
+    let filtered: (i64,) = sqlx::query_as(AssertSqlSafe(query_filtered))
+        .bind(&like_pattern)
+        .fetch_one(pool)
+        .await?;
+
+    Ok((items, total.0, filtered.0))
 }
 
 pub async fn get_battle(pool: &PgPool, id: Uuid) -> anyhow::Result<Option<BattleDetail>> {
@@ -66,7 +120,7 @@ pub async fn get_battle(pool: &PgPool, id: Uuid) -> anyhow::Result<Option<Battle
         r#"
         SELECT id, full_result
         FROM battles
-        WHERE  id = $1
+        WHERE id = $1
         "#,
     )
     .bind(id)

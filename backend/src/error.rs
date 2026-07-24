@@ -3,17 +3,26 @@ use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use serde_json::json;
 
-pub struct AppError(anyhow::Error);
+pub enum AppError {
+    NotFound(String),
+    Internal(anyhow::Error),
+}
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
-        eprintln!("Request error: {:?}", self.0);
-
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({ "error": "Internal server error" })),
-        )
-            .into_response()
+        match self {
+            AppError::NotFound(msg) => {
+                (StatusCode::NOT_FOUND, Json(json!({ "error": msg }))).into_response()
+            }
+            AppError::Internal(err) => {
+                eprintln!("Request error: {:?}", err);
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({ "error": "Internal server error" })),
+                )
+                    .into_response()
+            }
+        }
     }
 }
 
@@ -24,6 +33,6 @@ where
     E: Into<anyhow::Error>,
 {
     fn from(err: E) -> Self {
-        AppError(err.into())
+        AppError::Internal(err.into())
     }
 }
