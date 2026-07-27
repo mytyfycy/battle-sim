@@ -45,7 +45,7 @@ const PATTERNS = [
     name: 'Glos natury',
     kind: 'fail',
     text: () => `Glos natury nie zadzialal. Wytrzymalosc pozostaje bez zmian`,
-  }
+  },
   {
     test: /^Ice bullet dealt (\d+)\s*HP!$/i,
     name: 'Lodowy pocisk',
