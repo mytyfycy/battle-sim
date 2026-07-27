@@ -1,1 +1,37 @@
 @import "tailwindcss";
+
+:root {
+    --panel: #151826;
+    --panel-border: #2f2a42;
+    --gold: #DAA520;
+    --teal: #40E0D0;
+    --crimson: #B22222;
+    --emerald: #50C878;
+    --ink: #e6e0d1;
+    --ink-dim: #918ca1;
+}
+
+@keyframes token-attack {
+    0% { transform: translate(var(--tx, 0), var(--ty, 0)) scale(1); }
+    40% { transform: translate(calc(var(--tx, 0) + var(--dx, 0)), calc(var(--ty, 0) + var(--dy, 0))) scale(1.08); }
+    100% { transform: translate(var(--tx, 0), var(--ty, 0)) scale(1); }
+}
+
+@keyframes float-up-fade {
+    0% { transform: translateY(0); opacity: 0; }
+    15% { opacity: 1; }
+    100% { transform: translateY(-40px); opacity: 0; }
+}
+
+.animate-attack {
+    animation: token-attack 0.5s ease-in-out;
+}
+
+.animate-float-up {
+    animation: float-up-fade 1.0s ease-out forwards;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { filter: drop-shadow(0 0 2px var(--gold)) drop-shadow(0 0 0px var(--gold)); }
+    50% { filter: drop-shadow(0 0 10px var(--gold)) drop-shadow(0 0 4px var(--gold)); }
+}
