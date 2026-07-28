@@ -1,7 +1,10 @@
 <script>
     import { onMount, onDestroy } from 'svelte'
     import DataTable from 'datatables.net-dt'
+    import 'datatables.net-responsive-dt'
+
     import 'datatables.net-dt/css/dataTables.dataTables.css'
+    import 'datatables.net-responsive-dt/css/responsive.dataTables.css'
 
     let { columns, ajaxUrl, onDetailsClick } = $props()
 
@@ -21,6 +24,7 @@
           columns,
           serverSide: true,
           processing: true,
+          responsive: true,
           ajax: {
             url: ajaxUrl,
             type: 'GET',
@@ -68,6 +72,6 @@
     <p class="bg-red-500 text-black p-4 rounded-xl font-medium">Blad: {loadError}</p>
 {/if}
 
-<div style="display: {loadError ? 'none' : 'block' };">
-    <table bind:this={tableEl} class="display w-full"></table>
+<div class="w-full overflow-x-hidden" style="display: {loadError ? 'none' : 'block' };">
+    <table bind:this={tableEl} class="nowrap w-full"></table>
 </div>
