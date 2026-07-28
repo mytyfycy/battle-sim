@@ -48,6 +48,7 @@ pub async fn save_battle(pool: &PgPool, result: &BattleResult) -> anyhow::Result
 }
 
 pub const SORTABLE_COLUMNS: &[&str] = &[
+    "id",
     "character_a_name",
     "character_b_name",
     "winner_name",
@@ -56,6 +57,7 @@ pub const SORTABLE_COLUMNS: &[&str] = &[
 ];
 
 const SEARCH_CONDITION: &str = r#"
+    id::text ILIKE $1 OR
     character_a_name ILIKE $1 OR
     character_b_name ILIKE $1 OR
     winner_name ILIKE $1 OR
