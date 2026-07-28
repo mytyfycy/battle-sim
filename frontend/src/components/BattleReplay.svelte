@@ -148,7 +148,7 @@
                     disabled={revealing}
                     class="px-6 py-3 rounded-lg font-semibold bg-(--gold) hover:text-(--ink) active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all"
                 >
-                    {revealing ? '...' : 'Nastepna tura'}
+                    {revealing ? '...' : 'Tura walki'}
                 </button>
                 {#if instant && revealedCount < totalTurns}
                     <button
