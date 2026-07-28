@@ -16,6 +16,7 @@
     "vite": "^8.1.1"
   },
   "dependencies": {
-    "datatables.net-dt": "^2.3.8"
+    "datatables.net-dt": "^3.0.0",
+    "datatables.net-responsive-dt": "^4.0.0"
   }
 }
