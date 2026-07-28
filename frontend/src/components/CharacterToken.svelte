@@ -13,7 +13,7 @@
 
     const hpPercent = $derived(Math.max(0, Math.min(100, (hp / maxHp) * 100)))
     const teamColor = $derived(team === 'A' ? 'var(--teal)' : 'var(--crimson)')
-    const positionClass = $derived(corner === 'left' ? 'left-[10%] bottom-[50%]' : 'right-[10%] bottom-[50%]')
+    const positionClass = $derived(corner === 'left' ? 'left-[15%] bottom-[10%]' : 'right-[15%] top-[5%]')
     const floatColor = $derived(
       floatKind === 'heal' ? 'var(--emerald)'
       : floatKind === 'buff' ? 'var(--gold)'
@@ -23,7 +23,7 @@
 <div class="absolute {positionClass} flex flex-col items-center" style="--tx:0px; --ty:0px">
 
     <!-- Floating text -->
-    <div class="relative h-8 w-full flex justify-center">
+    <div class="relative h-4 w-full flex justify-center">
         {#key floatKey}
             {#if floatText}
                 <span
@@ -35,10 +35,9 @@
     </div>
 
     <!-- Name -->
-    <div class="text-sm md:text-base mb-1 px-2 py-0.5 rounded bg-black border"
+    <div class="text-sm md:text-base mb-1 px-2 py-0.5 rounded bg-(--panel) border-2 text-(--ink)"
         style="
         border-color: {active ? 'var(--gold)' : 'var(--panel-border)'};
-        color: var(--ink);
         ">
         {name}
     </div>
@@ -62,13 +61,13 @@
     </div>
 
     <!-- HP -->
-    <div class="mt-2 w-20 md:w-24 h-2 rounded-full overflow-hidden bg-black border border-(--panel-border)">
+    <div class="mt-2 w-20 md:w-24 h-2 rounded-full overflow-hidden border border-(--panel-border)">
         <div class="h-full transition-all duration-250"
             style="width: {hpPercent}%; background:
             {hpPercent > 50 ? 'var(--emerald)' : hpPercent > 20 ? 'var(--gold)' : 'var(--crimson)'};"
         >
         </div></div>
-    <div>{Math.max(0, hp)} / {maxHp}</div>
+    <div class="text-(--ink)">{Math.max(0, hp)} / {maxHp}</div>
 
     <div></div>
 </div>

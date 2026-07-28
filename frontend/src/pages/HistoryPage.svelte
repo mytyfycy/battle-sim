@@ -3,6 +3,8 @@
 
     let { navigate } = $props()
 
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
     const columns = [
       { title: 'ID walki', data: 'id' },
       { title: 'Gracz A', data: 'character_a_name' },
@@ -17,7 +19,7 @@
         render: (id) => `
           <button
             data-battle-id="${id}"
-            class="px-6 py-3 bg-teal-500 hover:bg-teal-800 text-white rounded-lg font-semibold disabled:opacity-50 active:scale-95 transition-all cursor-pointer"
+            class="px-6 py-3 bg-(--gold) text-black hover:text-(--ink) rounded-lg font-semibold disabled:opacity-50 active:scale-95 transition-all cursor-pointer"
             >
               Zobacz
             </button>
@@ -31,13 +33,13 @@
 </script>
 
 <div class="max-w-6xl mx-auto">
-    <div class="px-6 py-3 text-center text-white bg-gray-700 border rounded-xl">
-        <DataTable {columns} ajaxUrl="http://localhost:3000/battles" onDetailsClick={goToDetails} />
+    <div class="px-6 py-3 text-center text-(--ink) bg-(--panel) border rounded-xl">
+        <DataTable {columns} ajaxUrl="{API_BASE}/battles" onDetailsClick={goToDetails} />
     </div>
 </div>
 
 <style>
     :global(.dt-length select option) {
-        background-color: #374151;
+        background-color: var(--panel);
     }
 </style>

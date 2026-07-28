@@ -153,8 +153,7 @@
                 {#if instant && revealedCount < totalTurns}
                     <button
                         onclick={revealAll}
-                        class="px-4 py-2 rounded-lg font-medium border active:scale-95"
-                        style="border-color: var(--panel-border); color: var(--ink-dim);"
+                        class="px-6 py-3 rounded-lg font-semibold bg-(--gold) hover:text-(--ink) active:scale-95 cursor-pointer transition-all"
                     >
                         Pokaz cala walke
                     </button>

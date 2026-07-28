@@ -13,9 +13,9 @@
     }
 </script>
 
-<nav class="flex gap-4 p-4 border-b text-black font-medium">
-    <button onclick={() => navigate('#/battle')} class="hover:text-gray-500 cursor-pointer transition-all">Walka</button>
-    <button onclick={() => navigate('#/history')} class="hover:text-gray-500 cursor-pointer transition-all">Historia walk</button>
+<nav class="flex gap-4 p-4 border-b text-black font-medium border-(--panel-border)">
+    <button onclick={() => navigate('#/battle')} class="text-(--ink) hover:text-(--ink-dim) cursor-pointer transition-all">Walka</button>
+    <button onclick={() => navigate('#/history')} class="text-(--ink) hover:text-(--ink-dim) cursor-pointer transition-all">Historia walk</button>
 </nav>
 
 <main class="p-4">

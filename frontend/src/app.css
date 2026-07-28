@@ -4,11 +4,16 @@
     --panel: #151826;
     --panel-border: #2f2a42;
     --gold: #DAA520;
+    --gold-dim: #ab8118;
     --teal: #40E0D0;
     --crimson: #B22222;
     --emerald: #50C878;
     --ink: #e6e0d1;
     --ink-dim: #918ca1;
+}
+
+html, body {
+    background-color: #0A0C13;
 }
 
 @keyframes token-attack {
