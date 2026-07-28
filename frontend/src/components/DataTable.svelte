@@ -39,6 +39,16 @@
           },
           searching: true,
           ordering: true,
+          language: {
+            search: 'Szukaj:',
+            zeroRecords: 'Brak wynikow',
+            info: 'Pozycje _START_-_END_ z _TOTAL_',
+            infoEmpty: 'Brak danych',
+            infoFiltered: '(przefiltrowano z _MAX_ pozycji)',
+            paginate: { previous: 'Poprzednia', next: 'Nastepna' },
+            lengthMenu: 'Pokaz _MENU_ pozycji',
+            processing: 'Ladowanie...',
+          },
         })
 
         dt.on('xhr.dt', (e, settings, json) => {
