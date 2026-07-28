@@ -15,7 +15,7 @@ export function describeStatuses(statusList) {
   if (!Array.isArray(statusList)) return []
 
   return statusList.map((status) => {
-    const kindName = status?.kind ? Object.keys(status.kind[0]) : null
+    const kindName = status?.kind ? Object.keys(status.kind)[0] : null
 
     if (kindName === 'ExtraDefenseAura') {
       const amount = status.kind.ExtraDefenseAura?.amount ?? '?'
