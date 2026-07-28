@@ -46,8 +46,8 @@ async fn main() -> anyhow::Result<()> {
     let state = AppState { pool };
     let app = routes::router()
         .with_state(state)
-        .layer(cors)
-        .layer(GovernorLayer::new(governor_config));
+        .layer(GovernorLayer::new(governor_config))
+        .layer(cors);
 
     let addr = format!("0.0.0.0:{}", config.port);
     let listener = tokio::net::TcpListener::bind(&addr)
