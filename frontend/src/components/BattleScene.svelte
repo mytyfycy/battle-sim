@@ -13,17 +13,17 @@
     } = $props()
 </script>
 
-<div class="relative w-full aspect-video max-h-105 overflow-hidden rounded-xl border-2 border-(--panel-border)">
+<div class="relative w-full aspect-video max-h-105 lg:max-h-150 overflow-hidden rounded-xl border-2 border-(--panel-border)">
 
         <!-- floor -->
         <div class="absolute inset-0 flex items-center justify-center overflow-hidden" style="perspective: 1600px;
             background: radial-gradient(ellipse at 50% 30%, #23253a 0%, #121421 70%);">
-            <div class="w-[250%] h-[250%] shrink-0 border rounded-lg border-(--panel-border)"
+            <div class="w-[350%] h-[350%] shrink-0 border rounded-lg border-(--panel-border)"
                 style="
                     background-image:
                         linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
                         linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
-                    background-size: 3.125% 3.875%;
+                    background-size: 1.5625% 1.9375%;
                     background-color: rgba(255,255,255,0.015);
                     transform: rotateX(50deg) rotateZ(135deg) scale(1.15);
                     transform-style: preserve-3d;

@@ -88,77 +88,89 @@
 </script>
 
 {#if battle}
-    <div class="max-w-3xl mx-auto">
-        <BattleScene
-            {cardA}
-            {cardB}
-            {attackerTeam}
-            turnKey={revealedCount}
-            {floatA}
-            {floatB}
-            {floatKindA}
-            {floatKindB}
-        />
+    <div class="max-w-3xl lg:max-w-none mx-auto lg:grid lg:grid-cols-[280px_1fr_280px] lg:gap-x-2 lg:gap-y-0">
+        <div class="hidden lg:grid lg:col-start-1 lg:row-start-1 lg:items-center">
+            <StatPanel {...cardA} team="A" highlighted={attackerTeam === 'A'} />
+        </div>
 
-        <div class="mt-2">
-            <BattleLog
-                {attackerName}
-                {defenderName}
-                damage={currentTurn?.base_damage ?? null}
-                spellName={spellNamePl}
-                spellText={spellTextPl}
+        <div class="min-w-0 lg:col-start-2 lg:row-start-1">
+            <BattleScene
+                {cardA}
+                {cardB}
+                {attackerTeam}
                 turnKey={revealedCount}
+                {floatA}
+                {floatB}
+                {floatKindA}
+                {floatKindB}
             />
         </div>
 
-        <div class="grid grid-cols-2 gap-2 my-2">
-            <StatPanel {...cardA} team="A" highlighted={attackerTeam === 'A'} />
+        <div class="hidden lg:grid lg:col-start-3 lg:row-start-1 lg:items-center">
             <StatPanel {...cardB} team="B" highlighted={attackerTeam === 'B'} />
         </div>
 
-        {#if isFinished}
-            <div class="text-center">
-                <p class="text-xl font-bold mb-2" style="color: var(--gold);">{winnerName} wygrywa!</p>
-                <div class="flex items-center justify-center gap-2 flex-wrap">
+        <div class="min-w-0 lg:col-start-2 lg:row-start-2">
+            <div class="mt-2">
+                <BattleLog
+                    {attackerName}
+                    {defenderName}
+                    damage={currentTurn?.base_damage ?? null}
+                    spellName={spellNamePl}
+                    spellText={spellTextPl}
+                    turnKey={revealedCount}
+                />
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 my-2 lg:hidden">
+                <StatPanel {...cardA} team="A" highlighted={attackerTeam === 'A'} />
+                <StatPanel {...cardB} team="B" highlighted={attackerTeam === 'B'} />
+            </div>
+
+            {#if isFinished}
+                <div class="text-center">
+                    <p class="text-xl font-bold mb-2 text-(--gold)">{winnerName} wygrywa!</p>
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        {#if revealedCount > 0}
+                            <button
+                                onclick={revealPrev}
+                                class="px-4 py-2 rounded-lg font-medium border border-(--panel-border) text-(--ink-dim) hover:text-(--ink) active:scale-95 cursor-pointer transition-all"
+                            >
+                                Poprzednia tura
+                            </button>
+                        {/if}
+                        {#if finishedActions}
+                            {@render finishedActions()}
+                        {/if}
+                    </div>
+                </div>
+            {:else}
+                <div class="flex items-center justify-center gap-2 flex-wrap mt-2">
                     {#if revealedCount > 0}
                         <button
                             onclick={revealPrev}
-                            class="px-4 py-2 rounded-lg font-medium border border-(--panel-border) text-(--ink-dim) hover:text-(--ink) active:scale-95 cursor-pointer transition-all"
+                            class="px-4 py-2 rounded-lg font-medium border cursor-pointer border-(--panel-border) text-(--ink-dim) hover:text-(--ink) active:scale-95 transition-all"
                         >
                             Poprzednia tura
                         </button>
                     {/if}
-                    {#if finishedActions}
-                        {@render finishedActions()}
+                    <button
+                        onclick={revealNext}
+                        disabled={revealing}
+                        class="px-4 py-2 rounded-lg font-semibold bg-(--gold) hover:text-(--ink) active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all"
+                    >
+                        {revealing ? '...' : 'Tura walki'}
+                    </button>
+                    {#if instant && revealedCount < totalTurns}
+                        <button
+                            onclick={revealAll}
+                            class="px-4 py-2 rounded-lg font-medium border cursor-pointer border-(--panel-border) text-(--ink-dim) hover:text-(--ink) active:scale-95 transition-all"
+                        >
+                            Pokaz cala walke
+                        </button>
                     {/if}
                 </div>
-            </div>
-        {:else}
-            <div class="flex items-center justify-center gap-2 flex-wrap">
-                {#if revealedCount > 0}
-                    <button
-                        onclick={revealPrev}
-                        class="px-4 py-2 rounded-lg font-medium border cursor-pointer border-(--panel-border) text-(--ink-dim) hover:text-(--ink) active:scale-95 transition-all"
-                    >
-                        Poprzednia tura
-                    </button>
-                {/if}
-                <button
-                    onclick={revealNext}
-                    disabled={revealing}
-                    class="px-4 py-2 rounded-lg font-semibold bg-(--gold) hover:text-(--ink) active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all"
-                >
-                    {revealing ? '...' : 'Tura walki'}
-                </button>
-                {#if instant && revealedCount < totalTurns}
-                    <button
-                        onclick={revealAll}
-                        class="px-4 py-2 rounded-lg font-medium border cursor-pointer border-(--panel-border) text-(--ink-dim) hover:text-(--ink) active:scale-95 transition-all"
-                    >
-                        Pokaz cala walke
-                    </button>
-                {/if}
-            </div>
-        {/if}
+            {/if}
+        </div>
     </div>
 {/if}

@@ -26,7 +26,7 @@
     }
 </script>
 
-<div class="max-w-3xl mx-auto px-4">
+<div class="max-w-3xl lg:max-w-400 mx-auto px-4">
     {#if error}
         <p class="bg-red-500 text-black p-4 rounded-xl mb-6 font-medium">Blad: {error}</p>
     {/if}
