@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: postgres-dev
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: battles
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_dev:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d battles"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: backend-dev
+    environment:
+      DATABASE_URL: postgres://user:password@postgres:5432/battles
+      PORT: "3000"
+      RUST_LOG: debug
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - cargo-registry:/usr/local/cargo/registry
+      - cargo-target:/app/target
+    command: cargo watch -x run
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend-dev
+    environment:
+      VITE_API_URL: /api
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata_dev:
+  cargo-registry:
+  cargo-target:
+  frontend-node-modules:
