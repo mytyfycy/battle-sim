@@ -26,7 +26,7 @@
             data-battle-id="${id}"
             class="px-3 py-1 border-2 border-(--panel-border) text-(--ink) hover:text-(--ink-dim) rounded-lg font-semibold disabled:opacity-50 active:scale-95 transition-all cursor-pointer"
             >
-              Zobacz
+              Szczegoly
             </button>
           `,
       },
