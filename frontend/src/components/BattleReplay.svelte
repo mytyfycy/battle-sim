@@ -88,7 +88,7 @@
 </script>
 
 {#if battle}
-    <div class="max-w-3xl lg:max-w-none mx-auto lg:grid lg:grid-cols-[280px_1fr_280px] lg:gap-x-2 lg:gap-y-0">
+    <div class="max-w-3xl lg:max-w-none mx-auto lg:grid lg:grid-cols-[var(--battle-side-col)_1fr_var(--battle-side-col)] lg:gap-x-(--battle-gap) lg:gap-y-0">
         <div class="hidden lg:grid lg:col-start-1 lg:row-start-1 lg:items-center">
             <StatPanel {...cardA} team="A" highlighted={attackerTeam === 'A'} />
         </div>

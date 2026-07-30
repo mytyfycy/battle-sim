@@ -33,13 +33,15 @@
     }
 </script>
 
-<div class="max-w-3xl mx-auto">
-    <div class="flex items-center justify-between gap-4">
-        <button onclick={backToHistory} class="mb-2 text-sm font-medium text-(--gold) hover:text-(--ink) active:scale-95 cursor-pointer transition-all">
-            {'<-'} Wroc do historii walk
-        </button>
+<div class="max-w-3xl lg:max-w-400 mx-auto px-4">
+    <div class="lg:grid lg:grid-cols-[var(--battle-side-col)_1fr_var(--battle-side-col)] lg:gap-x-(--battle-gap) lg:gap-y-0">
+        <div class="flex items-center justify-between gap-4 mb-2 lg:col-start-2">
+            <button onclick={backToHistory} class="text-sm font-medium text-(--gold) hover:text-(--ink) active:scale-95 cursor-pointer transition-all">
+                {'<-'} Wroc do historii walk
+            </button>
 
-        <h1 class="text-xl font-semibold mb-2 text-(--ink-dim)">Walka #{battleId}</h1>
+            <h1 class="text-xl font-semibold text-(--ink-dim)">Walka #{battleId}</h1>
+        </div>
     </div>
 
     {#if loading}

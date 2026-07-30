@@ -10,6 +10,9 @@
     --emerald: #50C878;
     --ink: #e6e0d1;
     --ink-dim: #918ca1;
+
+    --battle-side-col: 280px;
+    --battle-gap: 0.5rem;
 }
 
 html, body {
