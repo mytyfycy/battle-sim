@@ -7,11 +7,10 @@ mod repository;
 mod routes;
 
 use db::AppState;
+use std::net::SocketAddr;
 use tower_governor::{
     GovernorLayer, governor::GovernorConfigBuilder, key_extractor::SmartIpKeyExtractor,
 };
-use axum::extract::connect_info::ConnectInfo;
-use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -41,8 +40,9 @@ async fn main() -> anyhow::Result<()> {
 
     axum::serve(
         listener,
-        app.into_make_service_with_connect_info::<SocketAddr>()
-    ).await?;
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await?;
 
     Ok(())
 }
