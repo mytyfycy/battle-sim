@@ -48,7 +48,7 @@
             {/if}
         </dd>
         <dt class="text-(--ink-dim)">Zaklecie</dt>
-        <dd class="text-right text-(--gold)">{spellPl}</dd>
+        <dd class="text-right text-(--gold) text-xs">{spellPl}</dd>
     </dl>
 
     {#if statusBadges.length > 0}
