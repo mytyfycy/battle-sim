@@ -95,12 +95,12 @@
     }
 
     :global(table.dataTable > tbody > tr > td.dtr-control:before) {
-        background-color: var(--panel-border) !important;
+        background-color: transparent !important;
         border-left-color: var(--gold-dim) !important;
     }
 
     :global(table.dataTable > tbody > tr.dtr-expanded > td.dtr-control:before) {
-        background-color: var(--panel-border) !important;
+        background-color: transparent !important;
         border-top-color: var(--gold-dim) !important;
         border-left-color: transparent !important;
         border-right-color: transparent !important;
