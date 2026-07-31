@@ -5,6 +5,9 @@ use serde_json::json;
 
 pub enum AppError {
     NotFound(String),
+    Unauthorized(String),
+    Conflict(String),
+    BadRequest(String),
     Internal(anyhow::Error),
 }
 
@@ -13,6 +16,15 @@ impl IntoResponse for AppError {
         match self {
             AppError::NotFound(msg) => {
                 (StatusCode::NOT_FOUND, Json(json!({ "error": msg }))).into_response()
+            }
+            AppError::Unauthorized(msg) => {
+                (StatusCode::UNAUTHORIZED, Json(json!({ "error": msg }))).into_response()
+            }
+            AppError::Conflict(msg) => {
+                (StatusCode::CONFLICT, Json(json!({ "error": msg }))).into_response()
+            }
+            AppError::BadRequest(msg) => {
+                (StatusCode::BAD_REQUEST, Json(json!({ "error": msg }))).into_response()
             }
             AppError::Internal(err) => {
                 eprintln!("Request error: {:?}", err);
