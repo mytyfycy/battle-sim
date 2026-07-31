@@ -1,3 +1,4 @@
+use super::auth;
 use crate::core::{battle, character};
 use crate::db::AppState;
 use crate::error::AppError;
@@ -7,6 +8,7 @@ use axum::extract::{Path, Query, State};
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use rand::thread_rng;
+use tower_sessions::Session;
 use uuid::Uuid;
 
 pub fn router() -> Router<AppState> {
@@ -17,7 +19,14 @@ pub fn router() -> Router<AppState> {
 
 async fn start_battle(
     State(state): State<AppState>,
+    session: Session,
 ) -> Result<Json<battle::BattleResult>, AppError> {
+    let nick: String = session
+        .get(auth::SESSION_USER_NICK_KEY)
+        .await
+        .map_err(|e| AppError::Internal(anyhow::anyhow!("Session error: {e}")))?
+        .ok_or_else(|| AppError::Unauthorized("You have to be logged in".to_string()))?;
+
     let result = {
         let mut rng = thread_rng();
         let (char_a, char_b) = character::generate_characters(&mut rng);
@@ -25,7 +34,7 @@ async fn start_battle(
         battle::simulate_battle(char_a, char_b, &mut rng)?
     };
 
-    battle_repo::save_battle(&state.pool, &result).await?;
+    battle_repo::save_battle(&state.pool, &result, &nick).await?;
 
     Ok(Json(result))
 }
