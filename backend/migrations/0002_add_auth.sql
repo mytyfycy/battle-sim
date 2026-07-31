@@ -5,5 +5,5 @@ CREATE TABLE users (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-ALTER TABLE battles ADD COLUMN created_by TEXT REFERENCES users(nick);
+ALTER TABLE battles ADD COLUMN created_by TEXT NOT NULL REFERENCES users(nick);
 CREATE INDEX idx_battles_created_by ON battles (created_by);

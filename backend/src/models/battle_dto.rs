@@ -9,7 +9,7 @@ pub struct BattleListItem {
     pub winner_name: String,
     pub loser_name: String,
     pub attacker_hp_at_end: i32,
-    pub created_by: Option<String>,
+    pub created_by: String,
 }
 
 #[derive(Serialize, sqlx::FromRow)]
