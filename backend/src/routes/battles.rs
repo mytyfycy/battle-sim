@@ -21,11 +21,10 @@ async fn start_battle(
     State(state): State<AppState>,
     session: Session,
 ) -> Result<Json<battle::BattleResult>, AppError> {
-    let nick: String = session
+    let nick: Option<String> = session
         .get(auth::SESSION_USER_NICK_KEY)
         .await
-        .map_err(|e| AppError::Internal(anyhow::anyhow!("Session error: {e}")))?
-        .ok_or_else(|| AppError::Unauthorized("You have to be logged in".to_string()))?;
+        .map_err(|e| AppError::Internal(anyhow::anyhow!("Session error: {e}")))?;
 
     let result = {
         let mut rng = thread_rng();
@@ -34,7 +33,9 @@ async fn start_battle(
         battle::simulate_battle(char_a, char_b, &mut rng)?
     };
 
-    battle_repo::save_battle(&state.pool, &result, &nick).await?;
+    if let Some(nick) = nick {
+        battle_repo::save_battle(&state.pool, &result, &nick).await?;
+    }
 
     Ok(Json(result))
 }
