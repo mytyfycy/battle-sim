@@ -4,7 +4,11 @@ use crate::models::battle_dto::{BattleDetail, BattleListItem};
 use sqlx::{AssertSqlSafe, PgPool};
 use uuid::Uuid;
 
-pub async fn save_battle(pool: &PgPool, result: &BattleResult) -> anyhow::Result<Uuid> {
+pub async fn save_battle(
+    pool: &PgPool,
+    result: &BattleResult,
+    created_by: &str,
+) -> anyhow::Result<Uuid> {
     let (winner, loser) = match result.winner_team {
         TeamId::A => (
             &result.character_a_start.name,
@@ -30,8 +34,8 @@ pub async fn save_battle(pool: &PgPool, result: &BattleResult) -> anyhow::Result
     let row: (Uuid,) = sqlx::query_as(
         r#"
         INSERT INTO battles
-            (character_a_name, character_b_name, winner_name, loser_name, attacker_hp_at_end, full_result)
-        VALUES ($1, $2, $3, $4, $5, $6)
+            (character_a_name, character_b_name, winner_name, loser_name, attacker_hp_at_end, full_result, created_by)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id
         "#,
     )
@@ -41,6 +45,7 @@ pub async fn save_battle(pool: &PgPool, result: &BattleResult) -> anyhow::Result
     .bind(loser)
     .bind(attacker_hp_at_end)
     .bind(&full_result)
+    .bind(created_by)
     .fetch_one(pool)
     .await?;
 
@@ -54,6 +59,7 @@ pub const SORTABLE_COLUMNS: &[&str] = &[
     "winner_name",
     "loser_name",
     "attacker_hp_at_end",
+    "created_by",
 ];
 
 const SEARCH_CONDITION: &str = r#"
@@ -62,7 +68,8 @@ const SEARCH_CONDITION: &str = r#"
     character_b_name ILIKE $1 OR
     winner_name ILIKE $1 OR
     loser_name ILIKE $1 OR
-    attacker_hp_at_end::text ILIKE $1
+    attacker_hp_at_end::text ILIKE $1 OR
+    created_by ILIKE $1
 "#;
 
 pub async fn list_battles_datatable(
@@ -86,7 +93,7 @@ pub async fn list_battles_datatable(
 
     let query = format!(
         r#"
-        SELECT id, character_a_name, character_b_name, winner_name, loser_name, attacker_hp_at_end
+        SELECT id, character_a_name, character_b_name, winner_name, loser_name, attacker_hp_at_end, created_by
         FROM battles
         WHERE {SEARCH_CONDITION}
         ORDER BY {column} {direction}
