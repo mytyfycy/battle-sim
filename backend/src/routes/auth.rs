@@ -6,6 +6,7 @@ use argon2::password_hash::rand_core::OsRng;
 use argon2::password_hash::{PasswordHasher, PasswordVerifier, SaltString};
 use argon2::{Argon2, PasswordHash};
 use axum::extract::State;
+use axum::http::StatusCode;
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use tower_sessions::Session;
@@ -70,13 +71,13 @@ async fn login(
     Ok(Json(AuthResponse { nick: user.nick }))
 }
 
-async fn logout(session: Session) -> Result<(), AppError> {
+async fn logout(session: Session) -> Result<StatusCode, AppError> {
     session
         .flush()
         .await
         .map_err(|e| AppError::Internal(anyhow::anyhow!("Session error: {e}")))?;
 
-    Ok(())
+    Ok(StatusCode::NO_CONTENT)
 }
 
 async fn me(session: Session) -> Result<Json<AuthResponse>, AppError> {
