@@ -13,7 +13,7 @@ export const authState = $state({
 export async function refreshAuth() {
   try {
     const res = await getMe()
-    authState.nick = res.nick
+    authState.nick = res?.nick ?? null
   } catch {
     authState.nick = null
   } finally {
