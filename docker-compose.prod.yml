@@ -23,6 +23,7 @@ services:
     environment:
       DATABASE_URL: postgres://user:password@postgres:5432/battles
       PORT: "3000"
+      COOKIE_SECURE: "true"
     expose:
       - "3000"
     depends_on:

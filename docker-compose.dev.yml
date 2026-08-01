@@ -25,7 +25,7 @@ services:
       DATABASE_URL: postgres://user:password@postgres:5432/battles
       PORT: "3000"
       RUST_LOG: debug
-      COOKIE_SECURE: false
+      COOKIE_SECURE: "false"
     ports:
       - "3000:3000"
     volumes:
