@@ -1,3 +1,5 @@
+import { translateError } from '../errorMessages.js'
+
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 export class ApiError extends Error {
@@ -7,21 +9,14 @@ export class ApiError extends Error {
   }
 }
 
+function kindFromStatus(status) {
+  if (status === 404) return 'not_found'
+  if (status === 401) return 'unauthorized'
+  if (status === 409 || status === 400) return 'validation'
+  return 'server_error'
+}
+
 async function buildApiError(res) {
-  if (res.status === 404) {
-    return new ApiError('not_found', 'Nie znaleziono')
-  }
-
-  if (res.status === 401) {
-    const body = await res.json().catch(() => null)
-    return new ApiError('unauthorized', body?.error ?? 'Musisz sie zalogowac')
-  }
-
-  if (res.status === 409 || res.status === 400) {
-    const body = await res.json().catch(() => null)
-    return new ApiError('validation', body?.error ?? 'Nieprawidlowe dane')
-  }
-
   if (res.status === 429) {
     const retryAfter = res.headers.get('Retry-After')
     const seconds = retryAfter ? parseInt(retryAfter, 10) : null
@@ -33,7 +28,7 @@ async function buildApiError(res) {
   }
 
   const body = await res.json().catch(() => null)
-  return new ApiError('server_error', body?.error ?? 'Blad serwera')
+  return new ApiError(kindFromStatus(res.status), translateError(body?.error))
 }
 
 async function handleResponse(res) {
