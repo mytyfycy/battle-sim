@@ -15,6 +15,7 @@
       { title: 'Wygrany', data: 'winner_name', responsivePriority: 1 },
       { title: 'Przegrany', data: 'loser_name', responsivePriority: 1 },
       { title: 'HP atakujacego na koniec', data: 'attacker_hp_at_end', className: 'dt-center', responsivePriority: 3 },
+      { title: 'Uzytkownik', data: 'created_by', responsivePriority: 2 },
       {
         title: 'Szczegoly',
         data: 'id',
@@ -37,7 +38,7 @@
     }
 </script>
 
-<div class="max-w-6xl mx-auto">
+<div class="max-w-7xl mx-auto">
     <div class="px-6 py-3 text-center text-(--ink) bg-(--panel) border-2 border-(--panel-border) rounded-xl">
         <DataTable {columns} ajaxUrl="{API_BASE}/battles" onDetailsClick={goToDetails} />
     </div>
