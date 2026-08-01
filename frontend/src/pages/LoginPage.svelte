@@ -80,6 +80,7 @@
                     bind:value={password}
                     required
                     minlength="8"
+                    maxlength="64"
                     class="px-3 py-2 rounded-lg bg-transparent border border-(--panel-border) text-(--ink) focus:outline-none focus:border-(--gold)"
                 />
             </label>
@@ -92,6 +93,7 @@
                         bind:value={repeatPassword}
                         required
                         minlength="8"
+                        maxlength="64"
                         class="px-3 py-2 rounded-lg bg-transparent border border-(--panel-border) text-(--ink) focus:outline-none focus:border-(--gold)"
                     />
                 </label>

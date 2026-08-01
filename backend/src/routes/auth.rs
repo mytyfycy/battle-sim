@@ -94,13 +94,14 @@ fn validate_credentials(payload: &Credentials) -> Result<(), AppError> {
 
     if !(3..=32).contains(&nick_len) {
         return Err(AppError::BadRequest(
-            "Nick has to be between 3 and 32 characters".to_string(),
+            "Nick must be between 3 and 32 characters".to_string(),
         ));
     }
 
-    if payload.password.len() < 8 {
+    let password_len = payload.password.len();
+    if !(8..=64).contains(&password_len) {
         return Err(AppError::BadRequest(
-            "Password has to be at least 8 characters".to_string(),
+            "Password must be between 8 and 64 characters".to_string(),
         ));
     }
 
