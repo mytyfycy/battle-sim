@@ -1,5 +1,5 @@
 use crate::db::AppState;
-use crate::error::AppError;
+use crate::error::{AppError, AppJson};
 use crate::models::user_dto::{AuthResponse, Credentials};
 use crate::repository::user_repo;
 use argon2::password_hash::rand_core::OsRng;
@@ -23,7 +23,7 @@ pub fn router() -> Router<AppState> {
 
 async fn register(
     State(state): State<AppState>,
-    Json(payload): Json<Credentials>,
+    AppJson(payload): AppJson<Credentials>,
 ) -> Result<Json<AuthResponse>, AppError> {
     validate_credentials(&payload)?;
 
@@ -45,7 +45,7 @@ async fn register(
 async fn login(
     State(state): State<AppState>,
     session: Session,
-    Json(payload): Json<Credentials>,
+    AppJson(payload): AppJson<Credentials>,
 ) -> Result<Json<AuthResponse>, AppError> {
     let user = user_repo::find_by_nick(&state.pool, &payload.nick)
         .await?

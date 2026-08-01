@@ -1,4 +1,6 @@
 use axum::Json;
+use axum::extract::rejection::JsonRejection;
+use axum::extract::{FromRequest, Request};
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use serde_json::json;
@@ -46,5 +48,22 @@ where
 {
     fn from(err: E) -> Self {
         AppError::Internal(err.into())
+    }
+}
+
+pub struct AppJson<T>(pub T);
+
+impl<S, T> FromRequest<S> for AppJson<T>
+where
+    axum::Json<T>: FromRequest<S, Rejection = JsonRejection>,
+    S: Send + Sync,
+{
+    type Rejection = AppError;
+
+    async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
+        match axum::Json::<T>::from_request(req, state).await {
+            Ok(axum::Json(value)) => Ok(AppJson(value)),
+            Err(_rejection) => Err(AppError::BadRequest("Invalid request body".to_string())),
+        }
     }
 }
