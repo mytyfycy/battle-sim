@@ -1,6 +1,7 @@
 <script>
     import BattleReplay from '../components/BattleReplay.svelte'
     import { startBattle, ApiError } from '../lib/api/battles'
+    import { authState } from '../lib/auth.svelte'
 
     let battle = $state(null)
     let starting = $state(false)
@@ -33,7 +34,13 @@
                 class="px-6 py-3 bg-(--gold) hover:text-(--ink) rounded-lg font-semibold disabled:opacity-50 active:scale-95 transition-all cursor-pointer"
                 >
                     {starting ? 'Ladowanie...' : 'Rozpocznij gre'}
-                </button>
+            </button>
+
+            {#if !authState.nick}
+                <p class="text-xs text-(--ink-dim) text-center mt-3">
+                    Zaloguj sie, aby zapisac wynik w historii
+                </p>
+            {/if}
         </div>
     {:else}
         {#key replayKey}
