@@ -13,7 +13,8 @@ async function buildApiError(res) {
   }
 
   if (res.status === 401) {
-    return new ApiError('unauthorized', 'Musisz sie zalogowac')
+    const body = await res.json().catch(() => null)
+    return new ApiError('unauthorized', body?.error ?? 'Musisz sie zalogowac')
   }
 
   if (res.status === 409 || res.status === 400) {
@@ -39,6 +40,7 @@ async function handleResponse(res) {
   if (!res.ok) {
     throw await buildApiError(res)
   }
+  if (res.status === 204) return null
   return res.json()
 }
 
