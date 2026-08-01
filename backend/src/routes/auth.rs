@@ -80,16 +80,13 @@ async fn logout(session: Session) -> Result<StatusCode, AppError> {
     Ok(StatusCode::NO_CONTENT)
 }
 
-async fn me(session: Session) -> Result<Json<AuthResponse>, AppError> {
+async fn me(session: Session) -> Result<Json<Option<AuthResponse>>, AppError> {
     let nick: Option<String> = session
         .get(SESSION_USER_NICK_KEY)
         .await
         .map_err(|e| AppError::Internal(anyhow::anyhow!("Session error: {e}")))?;
 
-    match nick {
-        Some(nick) => Ok(Json(AuthResponse { nick })),
-        None => Err(AppError::Unauthorized("Not logged in".to_string())),
-    }
+    Ok(Json(nick.map(|nick| AuthResponse { nick })))
 }
 
 fn validate_credentials(payload: &Credentials) -> Result<(), AppError> {
