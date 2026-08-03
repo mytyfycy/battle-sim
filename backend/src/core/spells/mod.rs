@@ -95,3 +95,72 @@ pub fn cast(
         Spell::Reincarnation => reincarnation::Reincarnation.cast(caster, target, rng),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::core::character::Character;
+    use crate::core::status::StatusEffects;
+    use rand::SeedableRng;
+    use rand::rngs::StdRng;
+
+    fn dummy_character(spell: Spell) -> Character {
+        Character {
+            name: "Dummy".to_string(),
+            hp: 50,
+            max_hp: 50,
+            strength: 20,
+            defense: 2,
+            spell,
+            status_list: StatusEffects::new(),
+        }
+    }
+
+    #[test]
+    fn random_spell_can_produce_every_variant() {
+        let mut rng = StdRng::seed_from_u64(100);
+        let mut seen = [false; 8];
+
+        for _ in 0..2000 {
+            let index = match random_spell(&mut rng) {
+                Spell::HardHit => 0,
+                Spell::Aura => 1,
+                Spell::Rage => 2,
+                Spell::Shield => 3,
+                Spell::CriticalHit => 4,
+                Spell::NatureVoice => 5,
+                Spell::IceBullet => 6,
+                Spell::Reincarnation => 7,
+            };
+            seen[index] = true;
+        }
+
+        assert!(
+            seen.iter().all(|&s| s),
+            "expected all 8 spell variants to appear, saw: {seen:?}"
+        );
+    }
+
+    #[test]
+    fn cast_dispatches_to_the_matching_spell_implementation() {
+        let mut rng = StdRng::seed_from_u64(100);
+        let all_spells = [
+            Spell::HardHit,
+            Spell::Aura,
+            Spell::Rage,
+            Spell::Shield,
+            Spell::CriticalHit,
+            Spell::NatureVoice,
+            Spell::IceBullet,
+            Spell::Reincarnation,
+        ];
+
+        for spell in all_spells {
+            let caster = dummy_character(spell);
+            let target = dummy_character(Spell::HardHit);
+
+            let outcome = cast(spell, &caster, &target, &mut rng);
+            assert!(!outcome.description.is_empty());
+        }
+    }
+}
