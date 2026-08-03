@@ -70,3 +70,52 @@ impl StatusEffects {
         self.0.is_empty()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_is_empty() {
+        let status_list = StatusEffects::new();
+        assert!(status_list.is_empty());
+    }
+
+    #[test]
+    fn consume_defense_bonus_sums_multiple_effects() {
+        let mut status_list = StatusEffects::new();
+
+        status_list.add(StatusEffect::once(StatusKind::ExtraDefenseAura {
+            amount: 5,
+        }));
+        status_list.add(StatusEffect::once(StatusKind::ExtraDefenseAura {
+            amount: 3,
+        }));
+
+        let bonus = status_list.consume_defense_bonus();
+
+        assert_eq!(bonus, 8);
+    }
+
+    #[test]
+    fn consume_defense_bonus_returns_zero_when_empty() {
+        let mut status_list = StatusEffects::new();
+        assert_eq!(status_list.consume_defense_bonus(), 0);
+    }
+
+    #[test]
+    fn effect_expires_after_being_consumed_once() {
+        let mut status_list = StatusEffects::new();
+
+        status_list.add(StatusEffect::once(StatusKind::ExtraDefenseAura {
+            amount: 5,
+        }));
+
+        let first = status_list.consume_defense_bonus();
+        assert_eq!(first, 5);
+        assert!(status_list.is_empty());
+
+        let second = status_list.consume_defense_bonus();
+        assert_eq!(second, 0);
+    }
+}
