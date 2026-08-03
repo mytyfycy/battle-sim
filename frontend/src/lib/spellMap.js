@@ -67,7 +67,7 @@ const PATTERNS = [
   {
     test: /^Attacker missed a critical!$/i,
     name: 'Krytyczny cios',
-    kind: 'fail;',
+    kind: 'fail',
     text: (m) => `Cios krytyczny nie trafil`,
   },
   {
