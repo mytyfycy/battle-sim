@@ -138,7 +138,7 @@ mod tests {
     }
 
     #[test]
-    fn increase_defense_adds_to_current_damage() {
+    fn increase_defense_adds_to_current_defense() {
         let mut character = make_character(50, 100);
         character.increase_defense(3);
         assert_eq!(character.defense, 5);
