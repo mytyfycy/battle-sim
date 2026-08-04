@@ -32,7 +32,7 @@ mod tests {
             max_hp: 50,
             strength: 20,
             defense: 2,
-            spell: Spell::Aura,
+            spell: Spell::CriticalHit,
             status_list: StatusEffects::new(),
         }
     }
