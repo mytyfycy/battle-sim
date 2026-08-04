@@ -25,7 +25,7 @@ const PATTERNS = [
   {
     test: /^Attacker is enraged!$/i,
     name: 'Szal',
-    kind: '',
+    kind: 'buff',
     text: (m) => `W nastepnej turze zaatakuje ponownie`,
   },
   {
