@@ -4,13 +4,13 @@ services:
     container_name: postgres-prod
     restart: unless-stopped
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: battles
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - pgdata_prod:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d battles"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -21,7 +21,7 @@ services:
     container_name: backend-prod
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgres://user:password@postgres:5432/battles
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       PORT: "3000"
       COOKIE_SECURE: "true"
     expose:
@@ -37,10 +37,27 @@ services:
         VITE_API_URL: /api
     container_name: frontend-prod
     restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - certbot-etc:/etc/letsencrypt:ro
     depends_on:
       - backend
 
+  certbot:
+    build:
+      context: ./docker/certbot
+    container_name: certbot-prod
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - ./docker/certbot/secrets:/etc/letsencrypt/secrets:ro
+
 volumes:
   pgdata_prod:
+  certbot-etc:
