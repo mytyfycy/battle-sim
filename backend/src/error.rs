@@ -67,3 +67,66 @@ where
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use axum::body::to_bytes;
+
+    async fn body_json(response: Response) -> serde_json::Value {
+        let bytes = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        serde_json::from_slice(&bytes).unwrap()
+    }
+
+    #[tokio::test]
+    async fn not_found_maps_to_404() {
+        let response = AppError::NotFound("missing".to_string()).into_response();
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+
+        let body = body_json(response).await;
+        assert_eq!(body["error"], "missing");
+    }
+
+    #[tokio::test]
+    async fn unauthorized_maps_to_401() {
+        let response = AppError::Unauthorized("unauthorized".to_string()).into_response();
+        assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+
+        let body = body_json(response).await;
+        assert_eq!(body["error"], "unauthorized");
+    }
+
+    #[tokio::test]
+    async fn conflict_maps_to_409() {
+        let response = AppError::Conflict("taken".to_string()).into_response();
+        assert_eq!(response.status(), StatusCode::CONFLICT);
+
+        let body = body_json(response).await;
+        assert_eq!(body["error"], "taken");
+    }
+
+    #[tokio::test]
+    async fn bad_request_maps_to_400() {
+        let response = AppError::BadRequest("bad".to_string()).into_response();
+        assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+
+        let body = body_json(response).await;
+        assert_eq!(body["error"], "bad");
+    }
+
+    #[tokio::test]
+    async fn internal_maps_to_500_and_hides_the_real_error_message() {
+        let response = AppError::Internal(anyhow::anyhow!("db error")).into_response();
+        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+
+        let body = body_json(response).await;
+        assert_eq!(body["error"], "Internal server error");
+    }
+
+    #[test]
+    fn any_convertible_error_becomes_an_internal_app_error() {
+        let io_err = std::io::Error::other("io error");
+        let app_err: AppError = io_err.into();
+        assert!(matches!(app_err, AppError::Internal(_)));
+    }
+}
