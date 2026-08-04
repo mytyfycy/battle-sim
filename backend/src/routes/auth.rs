@@ -107,3 +107,84 @@ fn validate_credentials(payload: &Credentials) -> Result<(), AppError> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn creds(nick: &str, password: &str) -> Credentials {
+        Credentials {
+            nick: nick.to_string(),
+            password: password.to_string(),
+        }
+    }
+
+    fn is_bad_request(result: &Result<(), AppError>) -> bool {
+        matches!(result, Err(AppError::BadRequest(_)))
+    }
+
+    #[test]
+    fn accepts_valid_credentials() {
+        let result = validate_credentials(&creds("valid_nick", "password1"));
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn rejects_nick_shorter_than_three_chars() {
+        let result = validate_credentials(&creds("ab", "password1"));
+        assert!(is_bad_request(&result));
+    }
+
+    #[test]
+    fn accepts_nick_at_minimum_length() {
+        let result = validate_credentials(&creds("abc", "password1"));
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn accepts_nick_at_maximum_length() {
+        let nick = "a".repeat(32);
+        let result = validate_credentials(&creds(&nick, "password1"));
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn rejects_nick_longer_than_thirty_two_chars() {
+        let nick = "a".repeat(33);
+        let result = validate_credentials(&creds(&nick, "password1"));
+        assert!(is_bad_request(&result));
+    }
+
+    #[test]
+    fn nick_length_is_trimmed_before_validation() {
+        // Trimmed length is 3
+        let result = validate_credentials(&creds("  abc  ", "password1"));
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn rejects_password_shorter_than_eight_chars() {
+        let result = validate_credentials(&creds("valid_nick", "ab12"));
+        assert!(is_bad_request(&result));
+    }
+
+    #[test]
+    fn accepts_password_at_minimum_length() {
+        let result = validate_credentials(&creds("valid_nick", "12345678"));
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn accepts_password_at_maximum_length() {
+        let password = "a".repeat(64);
+        let result = validate_credentials(&creds("valid_nick", &password));
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn rejects_password_longer_than_sixty_four_chars() {
+        let password = "a".repeat(65);
+        let result = validate_credentials(&creds("valid_nick", &password));
+        assert!(is_bad_request(&result));
+    }
+}
