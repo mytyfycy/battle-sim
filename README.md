@@ -57,11 +57,21 @@ Every battle is saved along with a full turn-by-turn log, so it can later be rep
 
 ### Production version
 
+Production is meant to run on a VPS, with certificates issued via Let's Encrypt (pre-configured to use [deSEC](https://desec.io/) as the DNS provider).
+
+Before the first run:
+
+1. Copy `docker/certbot/secrets/desec.ini.example` to `docker/certbot/secrets/desec.ini` and put your deSEC API token there.
+2. Copy `.env.example` to `.env` and set `DOMAIN` to your actual domain (plus `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
+3. Run `chmod +x init-cert.sh` and then `./init-cert.sh` to issue the initial certificate.
+
+Skipping any of these will make nginx keep restarting in a loop instead of starting.
+
 ```bash
 docker compose -f docker-compose.prod.yml up --build
 ```
 
-The frontend will be available at `http://localhost` (the backend is exposed internally and accessible via `/api/`).
+The frontend will be available at `https://<DOMAIN>` (the backend is exposed internally and accessible via `/api/`).
 
 ### Development version
 
@@ -75,9 +85,8 @@ The backend runs with hot-reload (`cargo watch`), and frontend runs with the Vit
 * Backend API: `http://localhost:3000`
 * PostgreSQL: `localhost:5432`
 
-### [!] Database
-The default database credentials in `docker-compose.prod.yml` and `docker-compose.dev.yml` files (`POSTGRES_USER`, `POSTGRES_PASSWORD`) are
-sample values and **must be changed before deploying to production** (ideally passed via an `.env` file or secrets).
+### [!] Database & secrets
+The default values in `.env.example` (`DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DOMAIN`) and in `docker/certbot/secrets/desec.ini.example` are sample values and **must be changed before deploying to production**. Copy each `.example` file, remove the `.example` suffix, and fill in real values.
 
 ## License
 
