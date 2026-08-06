@@ -5,6 +5,7 @@
     import LoginPage from './pages/LoginPage.svelte'
     import { onMount } from 'svelte'
     import { authState, refreshAuth, logout } from './lib/auth.svelte'
+    import { truncateNick } from './lib/format'
 
     let route = $state(window.location.hash || '#/battle')
 
@@ -23,7 +24,7 @@
     const historyDetailMatch = $derived(route.match(/^#\/history\/(.+)$/))
 </script>
 
-<nav class="flex justify-between items-center gap-4 p-4 border-b text-black font-medium border-(--panel-border)">
+<nav class="flex flex-wrap justify-between items-center gap-4 p-4 border-b text-black font-medium border-(--panel-border)">
     <div class="flex gap-4">
         <button onclick={() => navigate('#/battle')}
             class="cursor-pointer transition-all
@@ -39,10 +40,13 @@
         </button>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 min-w-0">
         {#if authState.nick}
-            <span class="text-(--ink-dim) text-sm">{authState.nick}</span>
-            <button onclick={() => logout()} class="cursor-pointer text-(--ink) hover:text-(--ink-dim) transition-all">
+            <span
+                class="text-(--ink-dim) text-sm whitespace-nowrap shrink-0"
+                title={authState.nick}
+            >{truncateNick(authState.nick)}</span>
+            <button onclick={() => logout()} class="cursor-pointer text-(--ink) hover:text-(--ink-dim) transition-all shrink-0">
                 Wyloguj
             </button>
         {:else}
