@@ -25,6 +25,7 @@ async fn register(
     State(state): State<AppState>,
     AppJson(payload): AppJson<Credentials>,
 ) -> Result<Json<AuthResponse>, AppError> {
+    let payload = normalize_credentials(payload);
     validate_credentials(&payload)?;
 
     if user_repo::nick_exists(&state.pool, &payload.nick).await? {
@@ -47,6 +48,8 @@ async fn login(
     session: Session,
     AppJson(payload): AppJson<Credentials>,
 ) -> Result<Json<AuthResponse>, AppError> {
+    let payload = normalize_credentials(payload);
+
     let user = user_repo::find_by_nick(&state.pool, &payload.nick)
         .await?
         .ok_or_else(|| AppError::Unauthorized("Invalid nick or password".to_string()))?;
@@ -87,6 +90,15 @@ async fn me(session: Session) -> Result<Json<Option<AuthResponse>>, AppError> {
         .map_err(|e| AppError::Internal(anyhow::anyhow!("Session error: {e}")))?;
 
     Ok(Json(nick.map(|nick| AuthResponse { nick })))
+}
+
+fn normalize_credentials(mut payload: Credentials) -> Credentials {
+    payload.nick = payload
+        .nick
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+    payload
 }
 
 fn validate_credentials(payload: &Credentials) -> Result<(), AppError> {
@@ -186,5 +198,23 @@ mod tests {
         let password = "a".repeat(65);
         let result = validate_credentials(&creds("valid_nick", &password));
         assert!(is_bad_request(&result));
+    }
+
+    #[test]
+    fn normalize_trims_leading_and_trailing_spaces_from_nick() {
+        let normalized = normalize_credentials(creds("  Test  ", "password1"));
+        assert_eq!(normalized.nick, "Test");
+    }
+
+    #[test]
+    fn normalize_collapses_internal_whitespace_in_nick() {
+        let normalized = normalize_credentials(creds("valid  nick", "password1"));
+        assert_eq!(normalized.nick, "valid nick");
+    }
+
+    #[test]
+    fn normalize_does_not_touch_password() {
+        let normalized = normalize_credentials(creds("Test", "  password with spaces  "));
+        assert_eq!(normalized.password, "  password with spaces  ")
     }
 }

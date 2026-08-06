@@ -29,13 +29,15 @@
         return
       }
 
+      const normalizedNick = nick.trim().replace(/\s+/g, ' ')
+
       submitting = true
       try {
         if (mode === 'login') {
-          await login(nick, password)
+          await login(normalizedNick, password)
           navigate('#/battle')
         } else {
-          await register(nick, password)
+          await register(normalizedNick, password)
           switchMode('login')
           info = 'Konto utworzone, mozesz sie teraz zalogowac'
         }
